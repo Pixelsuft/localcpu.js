@@ -7,10 +7,46 @@ import base64
 import io
 from node_runner import run_node
 from keyb import keys_converter
+try:
+    import win_tools
+    use_win_tools = True
+except ImportError:
+    use_win_tools = False
 
 
 def p(*args, **kwargs):
     return os.path.join(cur_path, *args, **kwargs)
+
+
+def resize_window(w: int, h: int) -> None:
+    if use_win_tools:
+        pygame.display.set_mode((w, h))
+        hwnd_ = pygame.display.get_wm_info()['window']
+        if not hwnd_:
+            return
+        hwnd = int(hwnd_)
+        screen_width, screen_height = win_tools.get_screen_size()
+        app_size = win_tools.get_app_rect(hwnd)[2:]
+        need_x = round(screen_width / 2 - app_size[0] / 2)
+        need_y = round(screen_height / 2 - app_size[1] / 2)
+        win_tools.resize_app(
+            hwnd, (
+                need_x,
+                need_y,
+                app_size[0],
+                app_size[1]
+            )
+        )
+    else:
+        infoObject = pygame.display.Info()
+        screen_width, screen_height = infoObject.current_w, infoObject.current_h
+        need_x, need_y = round(screen_width / 2 - w / 2), round(screen_height / 2 - h / 2)
+        os.environ['SDL_VIDEO_WINDOW_POS'] = f'{need_x},{need_y}'
+        pygame.display.set_mode((w, h))
+
+
+def fix_color(color: list) -> tuple:
+    return tuple(color)
 
 
 pygame.init()
@@ -48,10 +84,8 @@ text_font = pygame.font.Font(p('dejavu_sans_mono.ttf'), text_multiplier[1] - 2)
 mouse_downs = [False, False, False]
 aa = True
 is_updated = False
-
-
-def fix_color(color: list) -> tuple:
-    return tuple(color)
+send_keys = []
+resize_window(w, h)
 
 
 while running:
@@ -97,7 +131,8 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 continue
             key_ = keys_converter.get(event.key)
-            if key_:
+            if key_ and key_ not in send_keys:
+                send_keys.append(key_)
                 if not events.get('a'):
                     events['a'] = []
                 events['a'].append(key_)
@@ -109,7 +144,8 @@ while running:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 continue
             key_ = keys_converter.get(event.key)
-            if key_:
+            if key_ and key_ in send_keys:
+                send_keys.remove(key_)
                 if not events.get('b'):
                     events['b'] = []
                 events['b'].append(key_)
@@ -126,13 +162,13 @@ while running:
             w, h = text_size
             c_w, c_h = round(w / 2), round(h / 2)
             pygame.display.set_caption(f'localcpu.js [{w}x{h}]')
-            pygame.display.set_mode((w, h))
+            resize_window(w, h)
         msg['c'] = True
     if msg.get('sg'):
         w, h = msg.get('sg')
         c_w, c_h = round(w / 2), round(h / 2)
         pygame.display.set_caption(f'localcpu.js [{w}x{h}]')
-        pygame.display.set_mode((w, h))
+        resize_window(w, h)
     if msg.get('st'):
         text_mode_size = tuple(msg.get('st'))
         text_size = (text_mode_size[0] * text_multiplier[0],
@@ -140,7 +176,7 @@ while running:
         w, h = text_size
         c_w, c_h = round(w / 2), round(h / 2)
         pygame.display.set_caption(f'localcpu.js [{w}x{h}]')
-        pygame.display.set_mode((w, h))
+        resize_window(w, h)
     if msg.get('c'):
         screen.fill((0, 0, 0))
         is_updated = True

@@ -25,6 +25,7 @@ def set_host(new_host: str) -> None:
 def init() -> None:
     os.environ['host'] = HOST
     os.environ['port'] = str(PORT)
+    print(f'Started at {HOST}:{PORT}.')
     SOCKET.bind((HOST, PORT))
     SOCKET.listen(1)
 
