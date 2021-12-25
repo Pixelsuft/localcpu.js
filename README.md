@@ -8,5 +8,5 @@ v86, running under nodejs with python client
 ![image4](https://user-images.githubusercontent.com/68371847/147376028-576a16c2-4f56-48a3-a9c9-dbb72772b4a5.png)
 
 ## Bugs
-Text mode space skipping made to prevent socket overflow 
+Text mode space skipping made to prevent socket overflow <br />
 Some lags with sockets
