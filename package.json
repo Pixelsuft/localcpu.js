@@ -1,0 +1,25 @@
+{
+  "name": "localcpu.js",
+  "version": "1.0.0",
+  "description": "Run v86 from nodejs with GUI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pixelsuft/localcpu.js.git"
+  },
+  "keywords": [
+    "localcpu.js"
+  ],
+  "author": "Pixelsuft",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Pixelsuft/localcpu.js/issues"
+  },
+  "homepage": "https://github.com/Pixelsuft/localcpu.js#readme",
+  "dependencies": {
+    "canvas": "^2.8.0"
+  }
+}
