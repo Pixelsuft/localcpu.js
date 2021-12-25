@@ -19,3 +19,7 @@ def get_app_rect(hwnd: int) -> tuple:
 
 def resize_app(hwnd: int, rect: tuple) -> None:
     win32gui.MoveWindow(hwnd, *rect, True)
+
+
+def focus_app(hwnd: int) -> None:
+    win32gui.SetForegroundWindow(hwnd)

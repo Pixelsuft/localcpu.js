@@ -37,6 +37,7 @@ def resize_window(w: int, h: int) -> None:
                 app_size[1]
             )
         )
+        win_tools.focus_app(hwnd)
     else:
         infoObject = pygame.display.Info()
         screen_width, screen_height = infoObject.current_w, infoObject.current_h
