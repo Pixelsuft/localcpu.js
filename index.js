@@ -61,9 +61,6 @@ var is_graphical = false;
 var graphic_screen;
 var graphic_context;
 var
-  graphic_image_data,
-  graphic_buffer,
-  graphic_buffer32,
   graphical_mode_width,
   graphical_mode_height;
 var
@@ -165,10 +162,6 @@ function init() {
     graphical_mode_width = data[0];
     graphical_mode_height = data[1];
     resize_canvas(data[0], data[1]);
-    graphic_image_data = graphic_context.createImageData(data[2], data[3]);
-    graphic_buffer = new Uint8Array(graphic_image_data.data.buffer);
-    graphic_buffer32 = new Int32Array(graphic_image_data.data.buffer);
-    e.bus.send("screen-tell-buffer", [graphic_buffer32], [graphic_buffer32.buffer]);
     send_msg({sg: [data[0], data[1]]});
   });
   e.bus.register("screen-set-size-text", function(data) {
@@ -194,17 +187,18 @@ function init() {
     }
   });
   e.bus.register("screen-fill-buffer-end", function(data) {
-    data.forEach((layer) => {
-      graphic_context.putImageData(
-        graphic_image_data,
-        layer.screen_x - layer.buffer_x,
-        layer.screen_y - layer.buffer_y,
-        layer.buffer_x,
-        layer.buffer_y,
-        layer.buffer_width,
-        layer.buffer_height
-      );
-    });
+    data.forEach(layer =>
+	{
+		graphic_context.putImageData(
+			layer.image_data,
+			layer.screen_x - layer.buffer_x,
+			layer.screen_y - layer.buffer_y,
+			layer.buffer_x,
+			layer.buffer_y,
+			layer.buffer_width,
+			layer.buffer_height
+		);
+	});
     send_msg({g: graphic_screen.toDataURL().substr(22)});
   });
   e.bus.register("screen-put-char", function(data) {

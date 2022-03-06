@@ -25,5 +25,7 @@ def update(need_update: bool) -> None:
         )
         resp = requests.get(url)
         f = open(file_path, 'wb')
+        if url == LIBV86_URL:
+            f.write(b'const ImageData = require(\'canvas\').ImageData')
         f.write(resp.content)
         f.close()
